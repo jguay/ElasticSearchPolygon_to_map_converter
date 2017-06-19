@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Elasticsearch Geo-Polygon query array to Map view</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+function GeoMapReload()
+{
+  //document.getElementById("resultArea").value = document.getElementById("geopoints").value;
+  //var x = document.getElementById("geopoints").value;
+  //var json = JSON.parse("[" + x + "]");
+  //document.getElementById("resultArea").value = json;
+  //return true;
+  initMap(document.getElementById("geopoints").value);
+}
+    </script>
+  </head>
+  <body>
+    <div id="points"><a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-polygon-query.html">Lat-Long Array geo-polygon query</a> to Map. Please copy/paste geo-points Lat-Long array:<br />
+<textarea id="geopoints" cols="100" rows="10">
+  [-80.190, 25.774],[-66.118, 18.466],[-64.757,32.321],[-80.190, 25.774]
+</textarea>
+<!-- <textarea id="resultArea" cols="100" rows="10">some default text
+</textarea> -->
+<button type="button" value="submit" onclick="GeoMapReload()">Submit</button>
+    </div>
+    <div id="map"></div>
+    <script>
+
+      // This example creates a simple polygon representing the Bermuda Triangle.
+
+      function initMap(Coords) {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat: 24.886, lng: -70.268},
+          mapTypeId: 'terrain'
+        });
+
+
+
+        if (Coords)
+        {
+          //alert("parameter detected!");
+          var json = JSON.parse("[" + Coords + "]");
+          /*for (var i = 0; i < json.length; i++) {
+            alert(json[i]);
+          }*/
+          triangleCoords = [];
+          for(var i = 0; i < json.length; i++) {
+            var jso = json[i];
+            for(var j = 0; j < 2; j++) {
+              //alert("jso[" + i + "][" + j + "] = " + jso[j]);
+              item = {};
+              item["lat"] = jso[1];
+              item["lng"] = jso[0];
+              triangleCoords.push(item);
+              //document.getElementById("resultArea").value = document.getElementById("resultArea").value + item["lat"] + "," + item["lng"];
+              //new google.maps.LatLng()
+            }
+          }
+          var MyPolygon = new google.maps.Polygon({
+            paths: triangleCoords,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+          });
+          //MyPolygon.setPath()=
+          MyPolygon.setMap(map);
+        } else {
+          // Define the LatLng coordinates for the polygon's path.
+          var triangleCoords = [
+            {lat: 25.774, lng: -80.190},
+            {lat: 18.466, lng: -66.118},
+            {lat: 32.321, lng: -64.757},
+            {lat: 25.774, lng: -80.190}
+          ];
+          // Construct the polygon.
+          var bermudaTriangle = new google.maps.Polygon({
+            paths: triangleCoords,
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.35
+          });
+          bermudaTriangle.setMap(map);
+        }
+
+
+      }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDBbOGPK3Fwv-CC6KbRzRa3mZYx7u67Wkc&callback=initMap">
+    </script>
+  </body>
+</html>
